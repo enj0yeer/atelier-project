@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Заказы — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container">
+    <div class="page-heading"><div><p class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</p><h1>Заказы</h1><p class="muted">Список заказов и актуальные этапы выполнения.</p></div>
+        <a class="button button-primary" th:href="@{/orders/new}" sec:authorize="hasRole('CLIENT')">+ Новый заказ</a></div>
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <form th:action="@{/orders}" method="get" class="filter-bar">
+        <input type="search" name="q" th:value="${searchQuery}" placeholder="Поиск по клиенту или услуге">
+        <select name="status"><option value="">Все статусы</option><option th:each="status : ${statuses}" th:value="${status}" th:text="${status.name() == 'NEW' ? 'Новый' : status.name() == 'IN_PROGRESS' ? 'В работе' : status.name() == 'READY' ? 'Готов' : 'Выдан'}" th:selected="${status.name() == selectedStatus}"></option></select>
+        <button class="button button-small" type="submit">Применить</button>
+        <a class="text-link" th:href="@{/orders}">Сбросить</a>
+    </form>
+    <div class="table-wrap" th:if="${!#lists.isEmpty(orders)}"><table>
+        <thead><tr><th>№</th><th>Клиент</th><th>Дата</th><th>Срок</th><th>Состав</th><th>Сумма</th><th>Статус</th><th th:if="${canManage}">Изменить статус</th></tr></thead>
+        <tbody><tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td><td th:text="${order.client.fullName}"></td>
+            <td th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(order.dueDate, 'dd.MM.yyyy')}"></td>
+            <td><span th:each="item : ${order.items}" class="item-line" th:text="|${item.service.name} × ${item.quantity}|"></span></td>
+            <td class="price" th:text="|${#numbers.formatDecimal(order.totalPrice, 1, 2)} ₽|"></td>
+            <td><span class="status" th:classappend="${'status-' + #strings.toLowerCase(order.status.name())}" th:text="${order.statusLabel}"></span></td>
+            <td th:if="${canManage}"><form th:action="@{/orders/{id}/status(id=${order.id})}" method="post" class="inline-form">
+                <select name="status"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status.name() == 'NEW' ? 'Новый' : status.name() == 'IN_PROGRESS' ? 'В работе' : status.name() == 'READY' ? 'Готов' : 'Выдан'}" th:selected="${status == order.status}"></option></select>
+                <button class="button button-small" type="submit">Сохранить</button>
+            </form></td>
+        </tr></tbody>
+    </table></div>
+    <div class="empty-state" th:if="${#lists.isEmpty(orders)}"><div class="empty-icon">✂</div><h2>Заказов пока нет</h2><p>Созданные заказы появятся в этом разделе.</p><a class="button button-primary" th:href="@{/orders/new}" sec:authorize="hasRole('CLIENT')">Оформить заказ</a></div>
+</main></body></html>

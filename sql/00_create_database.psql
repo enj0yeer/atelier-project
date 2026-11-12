@@ -1,0 +1,12 @@
+-- Запустить из psql от имени пользователя, имеющего право создавать роли и базы данных.
+DO $$
+BEGIN
+    CREATE ROLE atelier LOGIN PASSWORD 'atelier';
+EXCEPTION WHEN duplicate_object THEN NULL;
+END
+$$;
+SELECT 'CREATE DATABASE atelier_db OWNER atelier'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'atelier_db')
+\gexec
+\connect atelier_db
+\i sql/atelier_db.sql

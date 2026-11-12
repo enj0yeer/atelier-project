@@ -1,0 +1,19 @@
+<nav th:fragment="navbar" class="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <a class="brand" th:href="@{/services}">Atelier <span>studio</span></a>
+    <div class="nav-links">
+        <a th:href="@{/services}" sec:authorize="isAuthenticated()">Услуги</a>
+        <a th:href="@{/orders}" sec:authorize="isAuthenticated()">Заказы</a>
+        <a th:href="@{/statistics}" sec:authorize="hasAnyRole('MASTER','ADMIN')">Статистика</a>
+        <a th:href="@{/admin/users}" sec:authorize="hasRole('ADMIN')">Пользователи</a>
+        <a th:href="@{/about}">Об авторе</a>
+    </div>
+    <div class="nav-user" sec:authorize="isAuthenticated()">
+        <span sec:authentication="name"></span>
+        <form th:action="@{/logout}" method="post">
+            <button class="button button-quiet" type="submit">Выйти</button>
+        </form>
+    </div>
+    <div class="nav-user" sec:authorize="isAnonymous()">
+        <a th:href="@{/login}">Войти</a>
+    </div>
+</nav>

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Услуги — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body><div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container"><div class="page-heading"><div><p class="eyebrow">КАТАЛОГ АТЕЛЬЕ</p><h1>Услуги</h1><p class="muted">Пошив, ремонт и подгонка одежды по индивидуальным меркам.</p></div><a class="button button-primary" th:href="@{/admin/services/new}" sec:authorize="hasRole('ADMIN')">+ Добавить услугу</a></div>
+<div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+<div class="service-grid"><article class="service-card" th:each="service : ${services}"><div class="service-symbol">✂</div><h2 th:text="${service.name}"></h2><p th:text="${service.description}"></p><div class="service-bottom"><strong th:text="|от ${#numbers.formatDecimal(service.price, 1, 2)} ₽|"></strong><a class="text-link" th:href="@{/orders/new}" sec:authorize="hasRole('CLIENT')">Заказать →</a></div>
+<div class="admin-actions" sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/services/{id}/edit(id=${service.id})}">Изменить</a><form th:action="@{/admin/services/{id}/deactivate(id=${service.id})}" method="post"><button type="submit" class="link-button">Скрыть</button></form></div></article></div>
+<div class="empty-state" th:if="${#lists.isEmpty(services)}"><h2>Каталог пока пуст</h2><p>Администратор может добавить услуги в систему.</p></div>
+</main></body></html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Статистика — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
+<body><div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="container"><div class="page-heading"><div><p class="eyebrow">АНАЛИТИКА</p><h1>Статистика ателье</h1><p class="muted">Сводные показатели по зарегистрированным заказам.</p></div></div>
+<div class="stats-grid"><section class="stat-card"><span>Всего заказов</span><strong th:text="${statistics.totalOrders}"></strong></section><section class="stat-card"><span>Сумма заказов</span><strong th:text="|${#numbers.formatDecimal(statistics.totalRevenue, 1, 2)} ₽|"></strong></section></div>
+<div class="charts-grid"><section class="panel chart-panel"><h2>Заказы по статусам</h2><canvas id="statusBar"></canvas></section><section class="panel chart-panel"><h2>Распределение заказов</h2><canvas id="statusPie"></canvas></section></div>
+</main>
+<script th:inline="javascript">
+    const statusLabels = /*[[${statusLabels}]]*/ [];
+    const statusValues = /*[[${statusValues}]]*/ [];
+    const chartOptions = {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom'}}};
+    new Chart(document.getElementById('statusBar'), {type: 'bar', data: {labels: statusLabels, datasets: [{label: 'Количество', data: statusValues, borderRadius: 8}]}, options: chartOptions});
+    new Chart(document.getElementById('statusPie'), {type: 'pie', data: {labels: statusLabels, datasets: [{data: statusValues, borderWidth: 2}]}, options: chartOptions});
+</script>
+</body></html>

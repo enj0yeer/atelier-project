@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Вход — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main class="auth-shell">
+    <section class="auth-card">
+        <p class="eyebrow">ЛИЧНЫЙ КАБИНЕТ</p><h1>Вход в систему</h1>
+        <p class="muted">Введите электронную почту и пароль для продолжения работы.</p>
+        <div class="alert alert-error" th:if="${param.error}">Неверная электронная почта или пароль.</div>
+        <div class="alert alert-success" th:if="${param.registered}">Регистрация завершена. Теперь можно войти.</div>
+        <div class="alert alert-success" th:if="${param.logout}">Вы вышли из системы.</div>
+        <form th:action="@{/login}" method="post" class="form-stack">
+            <label>Электронная почта<input type="email" name="username" autocomplete="username" required></label>
+            <label>Пароль<input type="password" name="password" autocomplete="current-password" required></label>
+            <button class="button button-primary button-wide" type="submit">Войти</button>
+        </form>
+        <p class="form-foot">Нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,3 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><title>Ошибка — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body><div th:replace="~{fragments/navbar :: navbar}"></div><main class="container narrow"><section class="empty-state"><h1 th:text="${errorTitle}">Ошибка</h1><p th:text="${errorMessage}"></p><a class="button button-primary" th:href="@{/services}">Вернуться к услугам</a></section></main></body></html>
