@@ -47,7 +47,8 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider)
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/about", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                .requestMatchers("/", "/about", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error", "/error/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/services").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/statistics").hasAnyRole("ADMIN", "MASTER")
                 .requestMatchers(HttpMethod.POST, "/orders/*/status").hasAnyRole("ADMIN", "MASTER")
@@ -65,7 +66,8 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-                .permitAll());
+                .permitAll())
+            .exceptionHandling(exceptions -> exceptions.accessDeniedPage("/error/403"));
         // CSRF-защита оставлена включённой; Thymeleaf добавляет токен в формы с th:action.
         return http.build();
     }

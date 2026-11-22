@@ -7,6 +7,7 @@ import ru.fa.atelier.entity.Role;
 import ru.fa.atelier.entity.User;
 import ru.fa.atelier.repository.ClientRepository;
 import ru.fa.atelier.repository.EmployeeRepository;
+import ru.fa.atelier.repository.OrderRepository;
 import ru.fa.atelier.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final EmployeeRepository employeeRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -76,6 +78,33 @@ public class UserServiceImpl implements UserService {
             ensureEmployeeProfile(target);
         }
         userRepository.save(target);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId, String adminEmail) {
+        User target = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+        if (target.getEmail().equalsIgnoreCase(adminEmail)) {
+            throw new IllegalArgumentException("Нельзя удалить собственную учётную запись");
+        }
+        if (target.getRole() == Role.ADMIN && userRepository.countByRole(Role.ADMIN) <= 1) {
+            throw new IllegalArgumentException("Нельзя удалить последнего администратора");
+        }
+
+        clientRepository.findByUser_Email(target.getEmail()).ifPresent(client -> {
+            if (orderRepository.existsByClient_Id(client.getId())) {
+                throw new IllegalArgumentException("У пользователя есть заказы. Удалить его нельзя, чтобы сохранить историю.");
+            }
+            clientRepository.delete(client);
+        });
+        employeeRepository.findByUser_Email(target.getEmail()).ifPresent(employee -> {
+            if (orderRepository.existsByEmployee_Id(employee.getId())) {
+                throw new IllegalArgumentException("За пользователем закреплены заказы. Удалить его нельзя, чтобы сохранить историю.");
+            }
+            employeeRepository.delete(employee);
+        });
+        userRepository.delete(target);
     }
 
     private void ensureClientProfile(User user) {

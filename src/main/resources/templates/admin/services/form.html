@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Услуга — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Услуга - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container narrow"><div class="page-heading"><div><p class="eyebrow">АДМИНИСТРИРОВАНИЕ</p><h1 th:text="${pageTitle}"></h1></div></div>
 <form th:action="${serviceId == null} ? @{/admin/services} : @{/admin/services/{id}(id=${serviceId})}" th:object="${serviceForm}" method="post" class="panel form-stack">

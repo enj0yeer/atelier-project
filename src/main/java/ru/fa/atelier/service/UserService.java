@@ -10,4 +10,5 @@ public interface UserService {
     User register(RegistrationForm form);
     List<User> findAll();
     void changeRole(Long userId, Role role, String adminEmail);
+    void deleteUser(Long userId, String adminEmail);
 }

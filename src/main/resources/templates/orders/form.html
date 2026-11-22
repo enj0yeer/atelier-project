@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Новый заказ — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Новый заказ - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container narrow"><div class="page-heading"><div><p class="eyebrow">ОФОРМЛЕНИЕ</p><h1>Новый заказ</h1><p class="muted">Выберите услугу и укажите желаемую дату готовности.</p></div></div>
 <div class="alert alert-error" th:if="${formError}" th:text="${formError}"></div>
 <form th:action="@{/orders}" th:object="${orderForm}" method="post" class="panel form-stack">
-    <label>Услуга<select th:field="*{serviceId}" required><option value="">Выберите услугу</option><option th:each="service : ${services}" th:value="${service.id}" th:text="|${service.name} — ${service.price} ₽|"></option></select><small class="field-error" th:errors="*{serviceId}"></small></label>
+    <label>Услуга<select th:field="*{serviceId}" required><option value="">Выберите услугу</option><option th:each="service : ${services}" th:value="${service.id}" th:text="|${service.name} - ${service.price} ₽|"></option></select><small class="field-error" th:errors="*{serviceId}"></small></label>
     <label>Количество<input type="number" min="1" max="100" th:field="*{quantity}" required><small class="field-error" th:errors="*{quantity}"></small></label>
     <label>Плановая дата готовности<input type="date" th:field="*{dueDate}" required><small class="field-error" th:errors="*{dueDate}"></small></label>
     <label>Комментарий<textarea rows="4" th:field="*{note}" placeholder="Особые пожелания, размеры или детали заказа"></textarea><small class="field-error" th:errors="*{note}"></small></label>

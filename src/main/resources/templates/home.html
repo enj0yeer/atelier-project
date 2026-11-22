@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ателье - одежда с точной посадкой</title>
+    <meta name="description" content="Пошив, ремонт и бережная подгонка одежды в швейном ателье.">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="home-page">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<main>
+    <section class="home-hero">
+        <div class="hero-copy">
+            <p class="eyebrow">ШВЕЙНОЕ АТЕЛЬЕ · МОСКВА</p>
+            <h1>Вещи, которые<br><em>сидят по-настоящему.</em></h1>
+            <p class="hero-intro">Подгоняем любимую одежду, бережно ремонтируем и шьём по вашим меркам. Спокойно, точно, с вниманием к каждой детали.</p>
+            <div class="hero-actions">
+                <a class="button button-primary" th:href="@{/services}">Смотреть услуги <span aria-hidden="true">↗</span></a>
+                <a class="hero-secondary" th:href="@{/register}" sec:authorize="isAnonymous()">Создать аккаунт</a>
+                <a class="hero-secondary" th:href="@{/orders}" sec:authorize="isAuthenticated()">Мои заказы</a>
+            </div>
+            <div class="hero-note"><span class="note-rule"></span><span>Мастерская внимательной работы<br>и вещей с продолжением</span></div>
+        </div>
+        <div class="hero-art" aria-label="Иллюстрация ткани и швейных лекал" role="img">
+            <div class="art-sun"></div>
+            <div class="fabric-sheet fabric-back"></div>
+            <div class="fabric-sheet fabric-front"></div>
+            <div class="pattern-card"><span>ATELIER</span><svg viewBox="0 0 180 230" aria-hidden="true"><path d="M57 18c12 12 18 28 18 45l-6 25 22 29 10 93H22l11-93 22-29-6-25c0-17 1-33 8-45Z"/><path d="m69 88 21 29M35 117h65M24 191h77"/><circle cx="66" cy="40" r="11"/></svg><small>ФОРМА · ПОСАДКА · ДЕТАЛЬ</small></div>
+            <div class="art-caption">01 / ATELIER<br><span>Одежда, созданная для вас</span></div>
+            <div class="thread-line"></div>
+        </div>
+        <div class="hero-index">01 <span></span> 03</div>
+    </section>
+
+    <section class="home-intro">
+        <p class="eyebrow">РАБОТАЕМ С ОДЕЖДОЙ, А НЕ С ПОТОКОМ</p>
+        <p class="intro-statement">Хорошая вещь начинается с точной мерки и заканчивается ощущением: <em>«вот теперь моя».</em></p>
+        <a class="text-link" th:href="@{/about}">Узнать об ателье <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <section class="home-services">
+        <div class="section-heading"><div><p class="eyebrow">ЧЕМ ПОМОЖЕМ</p><h2>Работа с вашей одеждой</h2></div><a class="text-link" th:href="@{/services}">Все услуги <span aria-hidden="true">↗</span></a></div>
+        <div class="home-service-grid">
+            <article class="home-service-card" th:each="service, stat : ${services}">
+                <span class="service-number" th:text="|0${stat.count}|">01</span>
+                <h3 th:text="${service.name}">Название услуги</h3>
+                <p th:text="${service.description}">Описание услуги</p>
+                <strong th:text="|от ${#numbers.formatDecimal(service.price, 1, 2)} ₽|">от 0 ₽</strong>
+            </article>
+        </div>
+    </section>
+    <section class="home-cta"><p class="eyebrow">ПЕРВЫЙ ШАГ</p><h2>Расскажите, что хочется изменить.</h2><a class="button button-light" th:href="@{/register}" sec:authorize="isAnonymous()">Начать с регистрации <span aria-hidden="true">↗</span></a><a class="button button-light" th:href="@{/orders/new}" sec:authorize="hasRole('CLIENT')">Оформить заказ <span aria-hidden="true">↗</span></a></section>
+</main>
+<footer class="home-footer"><span>ATELIER / ШВЕЙНОЕ АТЕЛЬЕ</span><a th:href="@{/about}">Контакты и информация</a><span>Точность в каждой детали</span></footer>
+</body>
+</html>

@@ -38,6 +38,19 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(@PathVariable Long id,
+                             Authentication authentication,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Пользователь удалён");
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
     @GetMapping("/services/new")
     public String newService(Model model) {
         model.addAttribute("serviceForm", new ServiceForm());

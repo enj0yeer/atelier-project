@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Пользователи — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Пользователи - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container"><div class="page-heading"><div><p class="eyebrow">АДМИНИСТРИРОВАНИЕ</p><h1>Пользователи</h1><p class="muted">Учётные записи и назначенные роли.</p></div></div>
 <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
-<div class="table-wrap"><table><thead><tr><th>ID</th><th>ФИО</th><th>Электронная почта</th><th>Роль</th><th>Дата регистрации</th><th>Изменить роль</th></tr></thead><tbody>
+<div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>ФИО</th><th>Электронная почта</th><th>Роль</th><th>Дата регистрации</th><th>Действия</th></tr></thead><tbody>
 <tr th:each="user : ${users}"><td th:text="${user.id}"></td><td th:text="${user.fullName}"></td><td th:text="${user.email}"></td><td><span class="role-pill" th:text="${user.role}"></span></td><td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}"></td>
-<td><form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" class="inline-form">
+<td class="user-actions"><form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" class="inline-form">
 <select name="role"><option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role == user.role}"></option></select>
-<button class="button button-small" type="submit">Сохранить</button></form></td></tr>
+<button class="button button-small" type="submit">Сохранить</button></form>
+<form th:if="${user.email != #authentication.name}" th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" onsubmit="return confirm('Удалить пользователя? Если за ним есть заказы, удаление будет отклонено.');"><button class="button button-small button-danger" type="submit">Удалить</button></form>
+<span class="muted" th:if="${user.email == #authentication.name}">Текущий аккаунт</span></td></tr>
 </tbody></table></div>
 </main></body></html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Услуги — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Услуги - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container"><div class="page-heading"><div><p class="eyebrow">КАТАЛОГ АТЕЛЬЕ</p><h1>Услуги</h1><p class="muted">Пошив, ремонт и подгонка одежды по индивидуальным меркам.</p></div><a class="button button-primary" th:href="@{/admin/services/new}" sec:authorize="hasRole('ADMIN')">+ Добавить услугу</a></div>
 <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>

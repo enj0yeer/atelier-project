@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Статистика — Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Статистика - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container"><div class="page-heading"><div><p class="eyebrow">АНАЛИТИКА</p><h1>Статистика ателье</h1><p class="muted">Сводные показатели по зарегистрированным заказам.</p></div></div>
 <div class="stats-grid"><section class="stat-card"><span>Всего заказов</span><strong th:text="${statistics.totalOrders}"></strong></section><section class="stat-card"><span>Сумма заказов</span><strong th:text="|${#numbers.formatDecimal(statistics.totalRevenue, 1, 2)} ₽|"></strong></section></div>

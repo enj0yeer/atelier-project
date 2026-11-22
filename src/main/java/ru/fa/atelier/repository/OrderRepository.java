@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    boolean existsByClient_Id(Long clientId);
+    boolean existsByEmployee_Id(Long employeeId);
     @EntityGraph(attributePaths = {"client", "employee", "items", "items.service"})
     List<Order> findAllByOrderByOrderDateDesc();
 

@@ -6,9 +6,9 @@ services:
     environment:
       POSTGRES_DB: atelier_db
       POSTGRES_USER: atelier
-      POSTGRES_PASSWORD: atelier
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-atelier}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - atelier_pgdata:/var/lib/postgresql/data
     healthcheck:
