@@ -10,7 +10,11 @@ import java.util.List;
 @AllArgsConstructor
 public class StatisticsData {
     private long totalOrders;
+    private long totalUsers;
     private BigDecimal totalRevenue;
+    private long totalIssuedOrders;
+    private long issuedOrdersWithoutCompletionDate;
+    private BigDecimal averageCompletionDays;
     private List<String> statusLabels;
     private List<Long> statusValues;
 }

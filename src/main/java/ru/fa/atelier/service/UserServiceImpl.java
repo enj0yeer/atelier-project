@@ -1,6 +1,7 @@
 package ru.fa.atelier.service;
 
 import ru.fa.atelier.dto.RegistrationForm;
+import jakarta.persistence.EntityNotFoundException;
 import ru.fa.atelier.entity.Client;
 import ru.fa.atelier.entity.Employee;
 import ru.fa.atelier.entity.Role;
@@ -67,9 +68,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void changeRole(Long userId, Role role, String adminEmail) {
         User target = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         if (target.getEmail().equalsIgnoreCase(adminEmail) && role != Role.ADMIN) {
             throw new IllegalArgumentException("Нельзя снять роль администратора с собственной учётной записи");
+        }
+        if (target.getRole() == Role.ADMIN && role != Role.ADMIN
+                && userRepository.countByRole(Role.ADMIN) <= 1) {
+            throw new IllegalArgumentException("Нельзя снять роль с последнего администратора");
         }
         target.setRole(role);
         if (role == Role.CLIENT) {
@@ -84,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long userId, String adminEmail) {
         User target = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         if (target.getEmail().equalsIgnoreCase(adminEmail)) {
             throw new IllegalArgumentException("Нельзя удалить собственную учётную запись");
         }

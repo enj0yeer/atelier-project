@@ -1,16 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Статистика - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Статистика - Atelier</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body><div th:replace="~{fragments/navbar :: navbar}"></div>
 <main class="container"><div class="page-heading"><div><p class="eyebrow">АНАЛИТИКА</p><h1>Статистика ателье</h1><p class="muted">Сводные показатели по зарегистрированным заказам.</p></div></div>
-<div class="stats-grid"><section class="stat-card"><span>Всего заказов</span><strong th:text="${statistics.totalOrders}"></strong></section><section class="stat-card"><span>Сумма заказов</span><strong th:text="|${#numbers.formatDecimal(statistics.totalRevenue, 1, 2)} ₽|"></strong></section></div>
-<div class="charts-grid"><section class="panel chart-panel"><h2>Заказы по статусам</h2><canvas id="statusBar"></canvas></section><section class="panel chart-panel"><h2>Распределение заказов</h2><canvas id="statusPie"></canvas></section></div>
+<div class="stats-grid">
+    <section class="stat-card"><span>Всего заказов</span><strong th:text="${statistics.totalOrders}"></strong></section>
+    <section class="stat-card"><span>Зарегистрировано пользователей</span><strong th:text="${statistics.totalUsers}"></strong></section>
+    <section class="stat-card"><span>Сумма заказов</span><strong th:text="|${#numbers.formatDecimal(statistics.totalRevenue, 1, 2)} ₽|"></strong></section>
+    <section class="stat-card">
+        <span>Средний срок выполнения</span>
+        <strong th:if="${statistics.averageCompletionDays != null}" th:text="|${statistics.averageCompletionDays} дн.|"></strong>
+        <p class="stat-card-note" th:if="${statistics.averageCompletionDays == null && statistics.totalIssuedOrders == 0}">Пока нет выданных заказов</p>
+        <p class="stat-card-note" th:if="${statistics.issuedOrdersWithoutCompletionDate > 0 && statistics.averageCompletionDays == null}"
+           th:text="|У ${statistics.issuedOrdersWithoutCompletionDate} старых заказов нет даты завершения|"></p>
+        <p class="stat-card-note" th:if="${statistics.issuedOrdersWithoutCompletionDate > 0 && statistics.averageCompletionDays != null}"
+           th:text="|Не учтено старых заказов без даты: ${statistics.issuedOrdersWithoutCompletionDate}|"></p>
+    </section>
+</div>
+<section class="panel status-chart-panel" aria-labelledby="status-chart-title">
+    <div class="status-chart-heading">
+        <div>
+            <p class="eyebrow">РАБОТА АТЕЛЬЕ</p>
+            <h2 id="status-chart-title">Заказы по статусам</h2>
+            <p class="muted">Распределение текущих заказов по этапам работы.</p>
+        </div>
+        <div class="chart-total"><strong th:text="${statistics.totalOrders}"></strong><span>всего заказов</span></div>
+    </div>
+    <div class="status-chart-scale" aria-hidden="true"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+    <ul class="status-chart-list">
+        <li class="status-chart-item" th:each="label, iter : ${statusLabels}"
+            th:with="count=${statusValues[iter.index]}, share=${statistics.totalOrders == 0 ? 0 : count * 100.0 / statistics.totalOrders}">
+            <div class="status-chart-row">
+                <span class="status-chart-label"><span class="status-chart-dot" aria-hidden="true"></span><span th:text="${label}"></span></span>
+                <strong class="status-chart-count" th:text="${count}"></strong>
+            </div>
+            <div class="status-chart-track">
+                <span class="status-chart-fill" aria-hidden="true" th:style="|width: ${share}%|"></span>
+            </div>
+        </li>
+    </ul>
+    <p class="chart-footnote">Статистика обновляется на основе заказов в системе.</p>
+</section>
 </main>
-<script th:inline="javascript">
-    const statusLabels = /*[[${statusLabels}]]*/ [];
-    const statusValues = /*[[${statusValues}]]*/ [];
-    const chartOptions = {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom'}}};
-    new Chart(document.getElementById('statusBar'), {type: 'bar', data: {labels: statusLabels, datasets: [{label: 'Количество', data: statusValues, borderRadius: 8}]}, options: chartOptions});
-    new Chart(document.getElementById('statusPie'), {type: 'pie', data: {labels: statusLabels, datasets: [{data: statusValues, borderWidth: 2}]}, options: chartOptions});
-</script>
 </body></html>

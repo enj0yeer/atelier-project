@@ -2,9 +2,9 @@ package ru.fa.atelier.config;
 
 import ru.fa.atelier.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -48,7 +48,6 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/", "/about", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error", "/error/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/services").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/statistics").hasAnyRole("ADMIN", "MASTER")
                 .requestMatchers(HttpMethod.POST, "/orders/*/status").hasAnyRole("ADMIN", "MASTER")

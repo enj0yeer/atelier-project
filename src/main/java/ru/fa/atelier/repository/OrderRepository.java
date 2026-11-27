@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,20 +24,24 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select distinct o from AtelierOrder o join o.client c left join o.items i left join i.service s " +
            "where (:status is null or o.status = :status) " +
            "and (:search = '' or lower(c.fullName) like lower(concat('%', :search, '%')) " +
-           "or lower(s.name) like lower(concat('%', :search, '%'))) order by o.orderDate desc")
-    List<Order> searchAll(@Param("status") OrderStatus status, @Param("search") String search);
+           "or lower(s.name) like lower(concat('%', :search, '%')) " +
+           "or lower(coalesce(o.note, '')) like lower(concat('%', :search, '%'))) ")
+    List<Order> searchAll(@Param("status") OrderStatus status, @Param("search") String search, Sort sort);
 
     @EntityGraph(attributePaths = {"client", "items", "items.service"})
     @Query("select distinct o from AtelierOrder o join o.client c left join o.items i left join i.service s " +
            "where c.user.email = :email and (:status is null or o.status = :status) " +
-           "and (:search = '' or lower(s.name) like lower(concat('%', :search, '%'))) " +
-           "order by o.orderDate desc")
+           "and (:search = '' or lower(s.name) like lower(concat('%', :search, '%')) " +
+           "or lower(coalesce(o.note, '')) like lower(concat('%', :search, '%')))")
     List<Order> searchForClient(@Param("email") String email,
                                 @Param("status") OrderStatus status,
-                                @Param("search") String search);
+                                @Param("search") String search,
+                                Sort sort);
 
     long countByStatus(OrderStatus status);
 
     @Query("select coalesce(sum(o.totalPrice), 0) from AtelierOrder o")
     BigDecimal calculateTotalRevenue();
+
+    List<Order> findAllByCompletedAtIsNotNull();
 }

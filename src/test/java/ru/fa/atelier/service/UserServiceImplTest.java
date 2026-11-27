@@ -65,6 +65,20 @@ class UserServiceImplTest {
     }
 
     @Test
+    void cannotDemoteLastAdministrator() {
+        User admin = new User();
+        admin.setEmail("admin@example.test");
+        admin.setRole(Role.ADMIN);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+        when(userRepository.countByRole(Role.ADMIN)).thenReturn(1L);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.changeRole(1L, Role.MASTER, "another-admin@example.test"));
+        assertEquals(Role.ADMIN, admin.getRole());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void administratorCannotDeleteOwnAccount() {
         User admin = new User();
         admin.setEmail("admin@example.test");

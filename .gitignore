@@ -10,3 +10,6 @@ target/
 !.env.example
 *.log
 Thumbs.db
+.serena/
+tmp/
+output/

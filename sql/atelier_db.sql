@@ -41,10 +41,13 @@ CREATE TABLE IF NOT EXISTS orders (
     employee_id BIGINT REFERENCES employees(id) ON DELETE SET NULL,
     order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     due_date DATE NOT NULL,
+    completed_at TIMESTAMP,
     status VARCHAR(30) NOT NULL CHECK (status IN ('NEW', 'IN_PROGRESS', 'READY', 'ISSUED')),
     total_price NUMERIC(12,2) NOT NULL CHECK (total_price >= 0),
     note VARCHAR(1000)
 );
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP;
 
 CREATE TABLE IF NOT EXISTS order_items (
     id BIGSERIAL PRIMARY KEY,

@@ -1,6 +1,7 @@
 package ru.fa.atelier.service;
 
 import ru.fa.atelier.dto.ServiceForm;
+import jakarta.persistence.EntityNotFoundException;
 import ru.fa.atelier.entity.Service;
 import ru.fa.atelier.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class ServiceServiceImpl implements ServiceService {
     @Transactional(readOnly = true)
     public Service findById(Long id) {
         return serviceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Услуга не найдена"));
+                .orElseThrow(() -> new EntityNotFoundException("Услуга не найдена"));
     }
 
     @Override

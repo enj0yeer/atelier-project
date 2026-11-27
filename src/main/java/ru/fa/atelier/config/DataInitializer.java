@@ -62,13 +62,11 @@ public class DataInitializer {
                 if (client == null) {
                     return;
                 }
-                Employee employee = employeeRepository.findByUser_Email(master.getEmail()).orElse(null);
                 ru.fa.atelier.entity.Service service = serviceRepository.findAllByActiveTrueOrderByNameAsc()
                         .stream().findFirst().orElse(null);
                 if (service != null) {
                     Order order = new Order();
                     order.setClient(client);
-                    order.setEmployee(employee);
                     order.setDueDate(LocalDate.now().plusDays(7));
                     order.setStatus(OrderStatus.NEW);
                     order.setTotalPrice(service.getPrice());

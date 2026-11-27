@@ -14,6 +14,7 @@ import ru.fa.atelier.repository.ServiceRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,7 +85,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(employeeRepository.findByUser_Email("master@example.test")).thenReturn(Optional.of(employee));
 
-        service.changeStatus(1L, OrderStatus.IN_PROGRESS, "master@example.test");
+        service.changeStatus(1L, OrderStatus.IN_PROGRESS, "master@example.test", Role.MASTER);
 
         assertEquals(OrderStatus.IN_PROGRESS, order.getStatus());
         assertSame(employee, order.getEmployee());
@@ -96,12 +97,33 @@ class OrderServiceImplTest {
         Order order = new Order();
         order.setStatus(OrderStatus.NEW);
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(employeeRepository.findByUser_Email("admin@example.test")).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.changeStatus(1L, OrderStatus.READY, "admin@example.test"));
+                () -> service.changeStatus(1L, OrderStatus.READY, "admin@example.test", Role.ADMIN));
         assertEquals(OrderStatus.NEW, order.getStatus());
         verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void changeStatusSetsCompletionTimestampWhenOrderIsIssued() {
+        Order order = new Order();
+        order.setStatus(OrderStatus.READY);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        service.changeStatus(1L, OrderStatus.ISSUED, "admin@example.test", Role.ADMIN);
+
+        assertEquals(OrderStatus.ISSUED, order.getStatus());
+        assertNotNull(order.getCompletedAt());
+        assertFalse(order.getCompletedAt().isBefore(LocalDateTime.now().minusSeconds(5)));
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void findAllUsesRequestedDueDateSort() {
+        service.findAll(null, null, "dueDate");
+
+        verify(orderRepository).searchAll(isNull(), eq(""), argThat(sort ->
+                sort.getOrderFor("dueDate") != null && sort.getOrderFor("orderDate") != null));
     }
 
     @Test
@@ -118,7 +140,39 @@ class OrderServiceImplTest {
         when(employeeRepository.findByUser_Email("other@example.test")).thenReturn(Optional.of(other));
 
         assertThrows(IllegalArgumentException.class,
-                () -> service.changeStatus(1L, OrderStatus.IN_PROGRESS, "other@example.test"));
+                () -> service.changeStatus(1L, OrderStatus.IN_PROGRESS, "other@example.test", Role.MASTER));
         verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void administratorDoesNotBecomeAssigneeThroughStaleEmployeeProfile() {
+        Order order = new Order();
+        order.setStatus(OrderStatus.NEW);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        service.changeStatus(1L, OrderStatus.IN_PROGRESS, "former-master@example.test", Role.ADMIN);
+
+        assertEquals(OrderStatus.IN_PROGRESS, order.getStatus());
+        assertNull(order.getEmployee());
+        verifyNoInteractions(employeeRepository);
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void deleteRemovesExistingOrder() {
+        Order order = new Order();
+        when(orderRepository.findById(8L)).thenReturn(Optional.of(order));
+
+        service.delete(8L);
+
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    void deleteMissingOrderReturnsNotFound() {
+        when(orderRepository.findById(8L)).thenReturn(Optional.empty());
+
+        assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> service.delete(8L));
+        verify(orderRepository, never()).delete(any(Order.class));
     }
 }
